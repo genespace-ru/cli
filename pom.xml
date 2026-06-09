@@ -45,6 +45,42 @@
             <artifactId>groovy-nio</artifactId>
             <version>${groovy.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>ru.biosoft.genomebrowser</groupId>
+            <artifactId>misc</artifactId>
+            <version>[2.0.1,)</version>
+        </dependency>
+        
+        <dependency>
+          <groupId>ru.biosoft.diagrams</groupId>
+          <artifactId>diagram</artifactId>
+          <version>1.0.4-SNAPSHOT</version>
+        </dependency>
+        
+        <dependency>
+          <groupId>ru.biosoft.diagrams</groupId>
+          <artifactId>wdl</artifactId>
+          <version>1.0.4-SNAPSHOT</version>
+        </dependency>
+        
+        <dependency>  
+            <groupId>ru.biosoft.graph</groupId>
+            <artifactId>core</artifactId>
+            <version>2.0.0</version>
+          </dependency>
+        <dependency>  
+            <groupId>ru.biosoft.graphics</groupId>
+            <artifactId>core</artifactId>
+            <version>2.0.0</version>
+          </dependency>
+          
+          <dependency>
+            <groupId>ru.biosoft.graphics</groupId>
+            <artifactId>editor</artifactId>
+            <version>2.0.0</version>
+          </dependency>
+        
     </dependencies>
 
     <build>
