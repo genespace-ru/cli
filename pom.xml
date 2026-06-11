@@ -14,7 +14,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <!-- Extracted for easier maintenance -->
-        <groovy.version>4.0.22</groovy.version>
+        <groovy.version>4.0.13</groovy.version>
     </properties>
 
     <dependencies>
@@ -111,19 +111,9 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <sources>
-                        <source>
-                            <directory>${project.basedir}/src/main/groovy</directory>
-                            <includes>
-                                <include>**/*.groovy</include>
-                            </includes>
-                        </source>
-                    </sources>
-                </configuration>
             </plugin>
-
-            <!-- 3. Maven Shade Plugin (Creates the executable Fat JAR) -->
+            
+            <!-- 3. Maven Shade Plugin (The ONLY plugin needed for merging) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -137,14 +127,20 @@
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <transformers>
-                                <!-- CRITICAL: Merges Groovy extension modules (Fixes UnixPath.exists error) -->
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                                <!-- Sets your custom class as the entry point -->
+                                 <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/groovy/org.apache.groovy.runtime.ExtensionModule</resource>
+                                 </transformer>
+                                
+                                <!-- Merge Java SPI services -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                                
+                                <!-- Set your main class -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>ru.genespace.cli.LauncherGS</mainClass>
                                 </transformer>
                             </transformers>
-                            <!-- Prevents "Invalid signature file digest" errors -->
+                            
+                            <!-- Exclude crypto signatures -->
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>
@@ -152,7 +148,6 @@
                                         <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>
-                                        <exclude>META-INF/MANIFEST.MF</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
