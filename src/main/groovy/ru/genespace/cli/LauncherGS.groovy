@@ -56,7 +56,7 @@ public class LauncherGS extends Launcher {
         }
         //???
         jcommander.setProgramName(APP_NAME)
-        sleep(5000)
+        //sleep(3000)
     }
 
     private static String[] aliases(CmdBase cmd) {

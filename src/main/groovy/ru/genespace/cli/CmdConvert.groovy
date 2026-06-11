@@ -2,33 +2,34 @@ package ru.genespace.cli;
 
 import java.nio.file.Path
 import java.nio.file.Paths
+
+import com.beust.jcommander.Parameter
+import com.beust.jcommander.Parameters
+
 import biouml.model.Diagram
 import biouml.model.util.DiagramXmlWriter
 import biouml.plugins.wdl.diagram.WDLImporter
 import biouml.plugins.wdl.diagram.WDLLayouter
 import biouml.plugins.wdl.nextflow.NextFlowGenerator
+import biouml.plugins.wdl.nextflow.NextFlowRunner
 import biouml.plugins.wdl.parser.AstStart
 import biouml.plugins.wdl.parser.WDLParser
-import com.beust.jcommander.Parameter
-import com.beust.jcommander.Parameters
-
-import nextflow.exception.AbortOperationException
 import nextflow.cli.CmdBase
-
-import ru.biosoft.util.ApplicationUtils;
+import nextflow.exception.AbortOperationException
+import ru.biosoft.util.ApplicationUtils
 
 @Parameters(commandDescription = "Convert something to something")
 public class CmdConvert extends CmdBase {
     static final public NAME = 'convert'
     private OutputStream stdout = System.out
 
-    static final List<String> FORMATS = ['nextflow', 'diagram']
+    protected static final List<String> FORMATS = ['nextflow', 'diagram']
 
     @Parameter(names = ['-f','-format'], description = 'Output format')
-    String format
+    protected String format
 
     @Parameter(description = 'input file path, output file path')
-    List<String> args
+    protected List<String> args
 
     @Override
     public void run() {
@@ -53,21 +54,36 @@ public class CmdConvert extends CmdBase {
         String parent = inputPath.getParent().toString()
 
         String name = inputPath.getName();
-        Diagram diagram = loadDiagram(inputFileStr);
+        Path outputPath = null
+        if(format == "nextflow")
+            outputPath = outputFileStr ? Paths.get(outputFileStr) : inputPath.resolveSibling(inputPath.getBaseName() + ".nf" )
+        else if(format == "diagram")
+            outputPath = outputFileStr ? Paths.get(outputFileStr) : inputPath.resolveSibling(inputPath.getBaseName() + ".dml")
+
+        convert(inputPath, outputPath, format);
+    }
+
+    protected static void convert (Path inputPath, Path outputPath, String format) {
+        Diagram diagram = loadDiagram(inputPath.toString());
         if(format == "nextflow") {
-            Path outputPath = outputFileStr ? Paths.get(outputFileStr) : inputPath.resolveSibling(inputPath.getBaseName() + ".nf" )
-            NextFlowGenerator gen = new NextFlowGenerator();
-            String nextFlow = gen.generate(diagram);
-            ApplicationUtils.writeString(outputPath.toFile(), nextFlow);
+            generateNextflow(diagram, outputPath)
         }
         else if(format == "diagram") {
-            Path outputPath = outputFileStr ? Paths.get(outputFileStr) : inputPath.resolveSibling(inputPath.getBaseName() + ".dml")
             outputPath.toFile().withOutputStream{ fos ->
                 DiagramXmlWriter writer = diagram.getType().getDiagramWriter();
                 writer.setStream( fos );
                 writer.write( diagram );
             }
         }
+    }
+
+    protected static void generateNextflow(Diagram diagram, Path outputPath) {
+        NextFlowGenerator gen = new NextFlowGenerator();
+        String nextFlow = gen.generate(diagram);
+        outputPath.toFile().withOutputStream{ fos ->
+            ApplicationUtils.writeString(fos, nextFlow)
+        }
+        NextFlowRunner.generateFunctions(outputPath.toAbsolutePath().parent.toString())
     }
 
     protected static Diagram loadDiagram(String path) throws Exception {
