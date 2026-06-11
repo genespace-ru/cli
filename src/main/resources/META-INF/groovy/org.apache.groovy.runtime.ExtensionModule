@@ -1,0 +1,16 @@
+moduleName=groovy-nio
+moduleVersion=4.0.13
+extensionClasses=org.apache.groovy.nio.extensions.NioExtensions
+staticExtensionClasses=
+moduleName=groovy-xml
+moduleVersion=4.0.13
+extensionClasses=org.apache.groovy.xml.extensions.XmlExtensions
+staticExtensionClasses=
+moduleName=nextflow-extensions
+moduleVersion=25.04.4
+extensionClasses=nextflow.extension.ChannelEx,nextflow.splitter.SplitterEx,nextflow.file.SlurperEx
+staticExtensionClasses=
+moduleName=groovy-json
+moduleVersion=4.0.13
+extensionClasses=org.apache.groovy.json.extensions.JsonExtensions
+staticExtensionClasses=
