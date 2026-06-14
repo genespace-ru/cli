@@ -1,0 +1,4 @@
+moduleName=nextflow-extensions
+moduleVersion=25.04.4
+extensionClasses=nextflow.extension.ChannelEx,nextflow.splitter.SplitterEx,nextflow.file.SlurperEx,nextflow.extension.Bolts,nextflow.extension.FilesEx,org.apache.groovy.nio.extensions.NioExtensions,org.apache.groovy.xml.extensions.XmlExtensions
+staticExtensionClasses=
