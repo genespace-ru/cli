@@ -18,7 +18,7 @@ import nextflow.cli.CmdBase
 import nextflow.exception.AbortOperationException
 import ru.biosoft.util.ApplicationUtils
 
-@Parameters(commandDescription = "Convert something to something")
+@Parameters(commandDescription = "Convert a wdl script or a diagram to a nextflow script")
 public class CmdConvert extends CmdBase {
     static final public NAME = 'convert'
     private OutputStream stdout = System.out

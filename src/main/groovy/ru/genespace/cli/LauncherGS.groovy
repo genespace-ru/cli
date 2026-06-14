@@ -26,7 +26,7 @@ public class LauncherGS extends Launcher {
     private List<CmdBase> allMyCommands
     private JCommander jcommander
     private CliOptions optionsMy
-    private String cliString
+    private String cliStringMy
     private String colsString
     private List<String> normalizedArgs
     private CmdBase command
@@ -46,7 +46,8 @@ public class LauncherGS extends Launcher {
         //Add other commands here
         allMyCommands = (List<CmdBase>) [
             new CmdConvert(),
-            new CmdHelpGS()
+            //new CmdHelpGS(),
+            new CmdConvertRun()
         ]
         optionsMy = new CliOptions()
         jcommander = new JCommander(optionsMy)
@@ -56,7 +57,7 @@ public class LauncherGS extends Launcher {
         }
         //???
         jcommander.setProgramName(APP_NAME)
-        //sleep(3000)
+        sleep(3000)
     }
 
     private static String[] aliases(CmdBase cmd) {
@@ -68,7 +69,7 @@ public class LauncherGS extends Launcher {
      * Create the Jcommander 'interpreter' and parse the command line arguments
      */
     Launcher parseMainArgs(String... args) {
-        this.cliString = makeCli(System.getenv('NXF_CLI'), args)
+        this.cliStringMy = makeCli(System.getenv('NXF_CLI'), args)
         this.colsString = System.getenv('COLUMNS')
 
         def cols = getColumns()
@@ -94,6 +95,10 @@ public class LauncherGS extends Launcher {
         optionsMy
     }
 
+    String getCliString() {
+        cliStringMy
+    }
+
     /**
      * normalize the command line arguments to handle some corner cases
      */
@@ -106,8 +111,7 @@ public class LauncherGS extends Launcher {
             boolean isParentCommand = super.findCommand(current ) != null
 
             if (!isGsCommand && !isParentCommand && new File(current).isFile()) {
-                //TODO: if file is WDL or Diagram, convert first
-                argList.add(0, CmdRun.NAME)
+                argList.add(0, CmdConvertRun.NAME)
             }
         }
         String[] newArgs = argList as String[]
